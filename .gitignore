@@ -62,5 +62,5 @@ target/
 shipfig_figure.tex
 
 # my local files
-*.zkl
+#*.zkl
 [0-9]*.txt
