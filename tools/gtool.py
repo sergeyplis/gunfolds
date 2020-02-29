@@ -1,4 +1,6 @@
 import graph_tool as gt
+from graph_tool import draw as gtd
+import numpy as np
 
 def lg2gt(g):
     gr = gt.Graph()
@@ -14,10 +16,23 @@ def lg2gt(g):
             edges[(v,w)] = gr.add_edge(verts[v], verts[w])
     return gr
 
-def plotg(g):
+def plotg(g, layout='sfdp', pos=True):
     gg = lg2gt(g)
-    pos = gt.all.sfdp_layout(gg)
-    gt.all.graph_draw(gg, pos,
+    if not pos:
+        if layout=='fr':
+            pos = gtd.fruchterman_reingold_layout(gg)
+        else:
+            pos = gtd.sfdp_layout(gg)
+    else:
+        pos = gg.new_vertex_property("vector<double>")
+        n = gg.num_vertices()
+        s = 2.0*np.pi/n
+        for v in range(gg.num_vertices()):
+            idx = int(gg.vertex_properties['label'][gg.vertex(v)]) - 1
+            pos[gg.vertex(v)] = (n * np.cos(s * idx),
+                                 n * np.sin(s * idx))
+
+    gtd.graph_draw(gg, pos,
                vertex_text=gg.vertex_properties['label'],
                vertex_font_size=32,
                edge_pen_width=1,

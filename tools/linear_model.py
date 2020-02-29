@@ -64,7 +64,7 @@ def npG2SVAR(G):
     np.fill_diagonal(B,1)
     B = symchol(B)
     return A,B
-     
+
 def x2M(x, A, B, aidx, bidx):
     A[aidx] = x[:len(aidx[0])]
     B[bidx] = x[len(aidx[0]):]
@@ -311,6 +311,35 @@ def scoreAGraph(G, data, x0 = None):
                                args=(np.double(A), np.double(B),
                                      data, a_idx, b_idx),
                                disp=False, full_output=True)
+    ipdb.set_trace()
+    return 2*o[1] + K*np.log(data.shape[1]) #VARbic(o[1],K,data.shape[1])
+
+def scoreAGraph2(G, data, x0 = None):
+    A,B = npG2SVAR(G)
+    n = len(G)
+    a_idx = np.where(A != 0)
+    b_idx = np.where(B != 0)
+
+    T = data.shape[1]
+    YY = np.dot(data[:,1:],data[:,1:].T)
+    XX = np.dot(data[:,:-1],data[:,:-1].T)
+    YX = np.dot(data[:,1:],data[:,:-1].T)
+
+    K = scipy.sum(len(a_idx[0])+len(b_idx[0])/2)
+
+    if x0:
+        o = optimize.fmin_bfgs(nllf2, x0,
+                               args=(np.double(A), np.double(B),
+                                     YY,XX,YX,T,a_idx, b_idx),
+                                     gtol=1e-12, maxiter=500,
+                                     disp=False, full_output=True)
+    else:
+        o = optimize.fmin_bfgs(nllf2, scipy.randn(len(a_idx[0])+len(b_idx[0])),
+                               args=(np.double(A), np.double(B),
+                                     YY,XX,YX,T,a_idx, b_idx),
+                                gtol=1e-12, maxiter=500,
+                                disp=False, full_output=True)
+
     return 2*o[1] + K*np.log(data.shape[1]) #VARbic(o[1],K,data.shape[1])
 
 def estimateG(G,YY,XX,YX,T,x0=None):
@@ -362,6 +391,7 @@ def data2AB(data,x0=None):
                                  YY,XX,YX,T,a_idx, b_idx),
                            gtol=1e-12, maxiter=500,
                            disp=False, full_output=True)
+    ipdb.set_trace()
     A,B = x2M(o[0], np.double(A), np.double(B), a_idx, b_idx)
     B = B+B.T
     return  A,B

@@ -17,7 +17,7 @@ class SolutionNotFoundInTime(Exception):
 
 def ptloopnum(pt):
     """
-    Given a PathTree object returns the number of loop in it
+    Given a PathTree object returns the number of loops in it
     :param pt: PathTree object
     :return: number of loops (n)
     """
@@ -327,7 +327,7 @@ def pairprint(pt1, pt2, k=40):
 def etesteq(pt1, pt2, k=100):
     a1 = np.asarray(pt2seq(pt1, k))
     a2 = np.asarray(pt2seq(pt2, k))
-    return np.sum(a1-a2) == 0
+    return np.sum(a1 - a2) == 0
 
 
 def keeptreegrow(pt, e, seq, cutoff=10, cap=1000):
@@ -355,6 +355,7 @@ def add_element(d, pt):
         d[key].append(pt)
     else:
         d[key] = pt
+
 
 def del_element(d, pt, key=None):
     """
@@ -449,7 +450,7 @@ def growtree(pt, element, ref_elements, verbose=False, maxloop=100, cutoff=100):
     solver.Add(solver.Count(lweights, 0, len(lweights) - 1))  # only one loop is weighted
     for i in range(len(lweights)):
         solver.Add((lweights[i] == 0) <= (loops[i] == 0))  # if a loop has weight zero then it can't be active
-        #solver.Add(lweights[i] >= loops[i])
+        # solver.Add(lweights[i] >= loops[i])
     loops_and_weights(solver, eloops, ws)  # if a subtree is off (weight zero) no need to add loops
 
     # run the solver
@@ -463,7 +464,7 @@ def growtree(pt, element, ref_elements, verbose=False, maxloop=100, cutoff=100):
     numsol = 0
     pts = []
     while solver.NextSolution():
-        #print numsol,
+        # print numsol,
         new_pt = ptaugmented(pt, eloops_simplify(eloops))
         if verbose:
             print "trying PathTree: ", new_pt

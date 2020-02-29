@@ -17,6 +17,9 @@ def g2lg(g):
     """
     Convert a data structure encoding the MSL-type graph into a structure encoding latents graph
     :return: a graph with integer indices and sets as weights
+
+    Args:
+        g (MSL-graph): 
     """
     edge_type = {(0, 1): 1, (2, 0): 2}
     edge_weight = {(0, 1): 1, (2, 0): 0}
@@ -24,10 +27,7 @@ def g2lg(g):
                             for w in g[e][c]}
                    for c in g[e]}
           for e in g}
-    for e in lg:
-        if e in lg[e]:
-            lg[e][e] = {1: {PathTree({1})}}
-    return lg
+    return fix_selfloops(lg)
 
 
 def fix_selfloops(g):

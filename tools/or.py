@@ -5,9 +5,9 @@ import traversal, bfutils
 import numpy as np
 from ortools.constraint_solver import pywrapcp
 
-U = 3 # undersampling rate: 1 means no undersampling
-N = 4 # number of nodes
-k = 1 # number of extra edges
+U = 2 # undersampling rate: 1 means no undersampling
+N = 10 # number of nodes
+k = 25 # number of extra edges
 
 solver = pywrapcp.Solver("MSL")
 
