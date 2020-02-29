@@ -9,6 +9,7 @@ sys.path.append('tools')
 import zickle as zkl
 # local packages
 import dbn2latex as d2l
+import bfutils as bfu
 from bfutils import jason2graph
 
 def ring(n):
@@ -19,12 +20,12 @@ def ring(n):
     g[str(n)] = {'1': {(0,1)}}
     return g
 
-def listplot(fname, mname='JJ', stl='', width=5):
+def listplot(fname, mname='JJ', stl='', width=5, R=2):
     l = zkl.load(fname)
     l = l[:17*10]
     y = min(width,len(l))
     x = np.int(np.ceil(len(l)/float(y)))
-    d2l.matrix_list(l,y,x,R=2, w_gap=1, h_gap=2, mname=mname, stl=stl)
+    d2l.matrix_list(l,y,x, R=R, w_gap=1, h_gap=2, mname=mname, stl=stl)
 
 
 g = {'1': {'2': set([(0, 1)]), '7': set([(0, 1)])},
@@ -53,9 +54,6 @@ g = {'1': {'2': set([(0, 1)]), '7': set([(0, 1)])},
            '7': set([(0, 1)])}}
 
 
-# output file
-foo = open('figures/shipfig_figure.tex', 'wb')
-sys.stdout = foo
 
 # generation of the output
 g = {'1': {'2':set([(0,1)])},
@@ -67,12 +65,24 @@ g = {'1': {'2':set([(0,1)])},
 
 #d2l.matrix_unfold(l[0],2,1,R=5, w_gap=1, h_gap=2, mname='TT1')
 
-listplot('list.zkl', width=17)
+n = 20
+dens = 0.07
 
-sys.stdout = sys.__stdout__              # remember to reset sys.stdout!
-foo.flush()
-foo.close()
-PPP = os.getcwd()
-os.chdir('figures')
-os.system('pdflatex --shell-escape shipfig.tex 2>&1 > /dev/null')
-os.chdir(PPP)
+for i in range(10):
+    print i
+    g = bfu.ringmore(n,bfu.dens2edgenum(dens,n))
+    gl = bfu.all_undersamples(g)
+    zkl.save(gl, 'list1.zkl')
+
+    # output file
+    foo = open('figures/shipfig_figure.tex', 'wb')
+    sys.stdout = foo
+    listplot('list1.zkl', width=17, R=6)
+    sys.stdout = sys.__stdout__              # remember to reset sys.stdout!
+    foo.flush()
+    foo.close()
+    PPP = os.getcwd()
+    os.chdir('figures')
+    os.system('pdflatex --shell-escape shipfig.tex 2>&1 > /dev/null')
+    os.system('mv shipfig.pdf /tmp/all_graphs_'+str(n)+'nodes_density_'+str(dens)+'_'+str(i)+'.pdf')
+    os.chdir(PPP)
